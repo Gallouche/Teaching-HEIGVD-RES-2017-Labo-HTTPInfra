@@ -1,2 +1,3 @@
 FROM httpd:2.4
-COPY ./public/ /usr/local/apache2/htdocs/ 
+RUN apt-get update && apt-get install -y vim
+COPY ./public/ /usr/local/apache2/htdocs/
