@@ -75,7 +75,7 @@ We've decide to not keep this configuration in our final report because of the f
 ### Description
 In this step, the objective is to make the static server a little bit more dynamic by making AJAX requests on the dynamic server.
 
-We've created a new JavaScript script that will be load by the html file at a connection on the `/`. This script execute a GET request with a JSON option on `/api/fun/` and then parse the payload to insert it in the html with JQuery for exemple the sentence with :  `$("div.sentence").append(fun.sentence)` that will append the fun.sentence string to the string located at the `<div class="sentence">` element.
+We've created a new JavaScript script that will be load by the html file at a connection on the `/`. This script execute a GET request with a JSON option on `/api/fun/` and then parse the payload to insert it in the html with JQuery for exemple the line :  `$("div.sentence > strong").append(fun.sentence)` that will append the fun.sentence string inside the `<strong>` tag of the `<div class="sentence">` element.
 
 ### Test instructions
 Execute the following steps to see the result of this iteration:
@@ -83,11 +83,11 @@ Execute the following steps to see the result of this iteration:
 * At the root, execute the following commands:
 
 ```
-#Build & start the dynamic server
+# Build & start the dynamic server
 docker build -t http/dynamic_server express_dynamic_server/
 docker run -d --name dynamic http/dynamic_server
 
-#Build & start the static server
+# Build & start the static server
 docker build -t http/static_server apache_static_server/
 docker run -d --name static http/static_server
 ```
@@ -97,20 +97,34 @@ docker run -d --name static http/static_server
   * y = docker inspect dynamic | grep -i ipadd
 
 ```
-#Build the reverse proxy server
+# Build the reverse proxy server
 docker build -t http/reverse_proxy apache_reverse_proxy
-#As said before, this is already the semi-dynamic configuration
+
+# As said before, this is already the semi-dynamic configuration
 docker run -e STATIC_APP=172.17.0.x:80 -e DYNAMIC_APP=172.17.0.y:3000 -p 8080:80 http/reverse
 ```
 
 
 ## Step 5: Dynamic reverse proxy
 
-## Additional steps to get extra points on top of the "base" grade
+## Load Balancer
+We've also implemented a load balancer to dispatch the request among multiple containers. For that we used a custom version of the nginx reverse proxy [jwilder/nginx-proxy](https://github.com/jwilder/nginx-proxy) 
+This fork of the official nginx proxy uses [docker-gen](https://github.com/jwilder/docker-gen) to watch for changements among the containers. So we can still dispatch the traffic among multiple containers while adding and removing some.
 
-### Load balancing: multiple server nodes
+This image uses the virtual host assign to a docker-compose service to make upstream groups. The traffic is then dispatch among the servers of each group.
 
-### Load balancing: round-robin vs sticky sessions
+To be able to match the requested configuration : redirecting / to the static server and /api/fun to the dynamic one, we had to custom the template used to generate the nginx config.
 
-### Dynamic cluster management
+So we generate two upstream groups one for the static servers and one for the dynamic servers. The static servers group has the `ip_hash` module to enable sticky sessions based on the client ip, see the documentation for mmore infos about the `ip_hash` module [here](http://nginx.org/en/docs/http/ngx_http_upstream_module.html#ip_hash). The dynamic servers group balance the traffic in a round robin way (the default balance method in nginx).
 
+To demo the result we use docker-compose to start two servers, one static and one dynamic, and the reverse proxy server. Then we use docker-compose scale to add/remove dynamic or static servers. You can see in the nginx logs that the ids of the dynamic server's containers change at each request unlike the static server's containers which are locked for each different client ip.
+
+```
+# start the docker compose services, and don't detach it to see the logs
+docker-compose --build
+
+# scale up or down the static and dynamic services to see how the load balancer reacts
+# this command activates 2 static servers and 3 dynamic servers
+
+docker-compose scale static=2 dynamic=3
+```
