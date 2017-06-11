@@ -1,7 +1,7 @@
 # Teaching-HEIGVD-RES-2017-Labo-HTTPInfra
 
 ## Introduction
-This is the report of the last RES lab on a complete web archtecture using http apache server, express server and ajax request.
+This is the report of the last RES lab on a complete web architecture using http apache server, express server and ajax request.
 
 This lab take place in 5 steps, and some optionnal features.
 ## Step 1: Static HTTP server with apache httpd
@@ -21,19 +21,19 @@ docker build -t http/static_server apache_static_server/
 docker run -d -p 8080:80 http/static_server
 ```
 
-* After this, you can acces to the server on your browser at `localhost:8080`.
+* After this, you can access the server on your browser at `localhost:8080`.
 
 ## Step 2: Dynamic HTTP server with express.js
 
 ### Description
 In this step, it was asked to start a server in a Docker container but this time he should be dynamic and send a JSON on a GET http request.
 
-The Dockerfile created for this step is based on Node.js and his official docker image `node:alpine`. This dynamic server is write un JavaScript with the `express` package. The following command of the Dockerfile execute the `npm install` command to get all the used modules et then copy the important files in the server, expose the port 3000 and start.
+The Dockerfile created for this step is based on Node.js and his official docker image `node:alpine`, we chose this one because it's lighter than the default version. This dynamic server is write un JavaScript with the `express` package. The following command of the Dockerfile execute the `npm install` command to get all the used modules et then copy the important files in the server, expose the port 3000 and start.
 
-The point of this server is quit simple, he provide a JSON with 3 attributes :
+The point of this server is quite simple, it provides a JSON with 3 attributes :
 * A random sentence generated with the npm package [`Sentencer`](http://kylestetz.github.io/Sentencer/).
 * A random "good luck" number generated with the npm package [`Chance`](http://chancejs.com/).
-* A random hashtag generated with [`Chance`](http://chancejs.com/) aswell.
+* A random hashtag generated with [`Chance`](http://chancejs.com/) as well.
 
 ### Test instructions
 Execute the following steps to see the result of this iteration:
@@ -44,18 +44,18 @@ docker build -t http/dynamic_server express_dynamic_server/
 docker run -d -p 3000:3000 http/dynamic_server
 ```
 
-* After this, you can acces to the server on your browser at `localhost:3000`.
+* After this, you can access the server on your browser at `localhost:3000`.
 
 ## Step 3: Reverse proxy with apache (static configuration
 
 ### Description
-In this step, it was ased to run a reverse proxy server based on apache in a Docker container.
+In this step, it was asked to run a reverse proxy server based on apache in a Docker container.
 
-The Dockerfile created for this step is based on the official php docker image `php:5.6-apache`. This is different from the first step because we wanted to try different images to see different way to do an apache server.
+The Dockerfile created for this step is based on the official php docker image `php:5.6-apache`. This is different from the first step because we wanted to try different images to see different way to do an apache server and also use php a a script language to generate the configuration.
 
-As usual, we copy all the usfull files in the container, like the configuration files descripted above.
+As usual, we copy all the useful files in the container, like the configuration files descripted above.
 
-We've create 2 configuration files in `/etc/apache2/sites-available/`:
+We've create 2 configurations files in `/etc/apache2/sites-available/`:
 * `000-default.conf` for the default configuration
 * `001-reverse-proxy.conf` for our custom configuration
 
@@ -65,8 +65,8 @@ In the `001-reverse-proxy.conf` we tell to the server to redirect the requests:
 
 Later in the Dockerfile, we tell to the server to enable his reverse proxy mod with the comand `RUN a2enmod proxy proxy_http`, and then to take the both configuration files with `RUN a2ensite 000-* 001-*`.
 
-### Problemes and improvement
-The type of configuration is not easy to handle, you need to start the both static and dynamic server before the reverse proxy and find there Ip addresses to copy them in the configuration file. This not really what we want and we will improve it (not at the optimal point but not bad) in the step 5.
+### Problems and improvement
+The type of configuration is not easy to handle, you need to start the both static and dynamic server before the reverse proxy and find there Ip addresses to copy them in the configuration file. This is not really what we want and we will improve it (not at the optimal point but not bad) in the step 5.
 
 We've decide to not keep this configuration in our final report because of the following improvement and the difficulty (for nothing) to deploy a test. But we remain available to any questions you will have.
 
@@ -117,10 +117,9 @@ docker run -e STATIC_APP=172.17.0.x:80 -e DYNAMIC_APP=172.17.0.y:3000 -p 8080:80
 
 ## Additional steps to get extra points on top of the "base" grade
 
-### Load balancing: multiple server nodes (0.5pt)
+### Load balancing: multiple server nodes
 
-### Load balancing: round-robin vs sticky sessions (0.5 pt)
+### Load balancing: round-robin vs sticky sessions
 
-### Dynamic cluster management (0.5 pt)
+### Dynamic cluster management
 
-### Management UI (0.5 pt)
