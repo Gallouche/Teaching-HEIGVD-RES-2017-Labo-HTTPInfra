@@ -16,10 +16,6 @@ app.get('/', function(req, res) {
 	})
 })
 
-app.get('/api/fun', function(req, res) {
-	console.log("WRONG PATH")
-})
-
 app.listen(3000, function(){
 	console.log("Accepting HTTP request on port 3000...")
 })
