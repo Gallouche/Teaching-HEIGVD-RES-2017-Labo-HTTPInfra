@@ -1,3 +1,0 @@
-location /api/fun/ {
-	proxy_pass http://local.dev;
-}

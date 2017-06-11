@@ -17,7 +17,6 @@ services:
 
   nginx-proxy:
     image: jwilder/nginx-proxy
-    #image: nginx
     volumes:
       - /etc/nginx/vhost.d
       - /usr/share/nginx/html
