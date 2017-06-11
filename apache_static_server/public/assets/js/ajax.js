@@ -1,13 +1,10 @@
 $(function () {
-    console.log("script loaded !")
-
-    function loadFun() {
+    setInterval(function(){
         $.getJSON("/api/fun/", function (fun) {
             console.log(fun)
-            console.log(fun.sentence)
-            $("div.sentence").append(fun.sentence)
+            $("div.sentence > strong").html(fun.sentence)
+            $("div.number > strong").html(fun.number.toString())
+            $("div.hashtag > strong").html(fun.hashtag)
         })
-    }
-    loadFun()
-    //setInterval(loadFun, 2000)
+    }, 5000)
 });
