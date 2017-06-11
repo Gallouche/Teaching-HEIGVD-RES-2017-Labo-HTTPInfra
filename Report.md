@@ -112,8 +112,53 @@ docker run -e STATIC_APP=172.17.0.x:80 -e DYNAMIC_APP=172.17.0.y:3000 -p 8080:80
 
 * Now you can acces `demo.res.ch:8080` and you can see the text on the left changing each 5 seconds.
 
-
 ## Step 5: Dynamic reverse proxy
+### Description
+The objective of this step is to make the reverse proxy configuration more dynamic.
+
+To do this, we have based our Dockerfile on the official github [repo](https://github.com/docker-library/php/tree/master/5.6/apache) of the Docker image php. In this repo we saw that we need to create a configuration file (`config-template.php`) with some php variables that can take the parameter passed at the run of the container, for exemple:
+* `$dynamic_app = getenv('DYNAMIC_APP');` will get the parameter `DYNAMIC_APP` passed in argument in `docker run -e STATIC_APP=172.17.0.x:80 -e DYNAMIC_APP=172.17.0.y:3000 -p 8080:80 http/reverse`.
+
+With this, we can lauch the static and dynamic servers and get there ip adresses to pass them to the run of the reverse proxy container.
+
+Next in the Dockerfile, we copy the `apache2-foreground` file in the container, and when this php script will be execute, it will copy our configuration file in `001-reverse-proxy.conf`.
+
+### Test instructions
+
+* For this step, we have create a bash script to start all the container correctly:
+
+```
+echo "Build des images"
+docker build -t http/static apache_static_server/
+docker build -t http/dynamic express_dynamic_server/
+docker build -t http/reverse apache_reverse_proxy/
+
+echo "Suppression des container existants"
+docker kill $(docker ps -q)
+docker rm $(docker ps -aq)
+
+echo "Démarrage container static"
+docker run -d --name static http/static
+
+echo "Démarage container dynamic"
+docker run -d --name dynamic http/dynamic
+
+echo "IP STATIC"
+docker inspect static | grep -i ipadd
+
+echo "IP DYNAMIC"
+docker inspect dynamic | grep -i ipadd
+
+docker run -e STATIC_APP=172.17.0.2:80 -e DYNAMIC_APP=172.17.0.3:3000 -p 8080:80 http/reverse
+```
+
+* You only need to open a terminal at the root of the repo and type:
+
+```
+./test.sh
+```
+
+* Then you can check the result (that will be the same as the step 4) in your browser at `demo.res.ch:8080`.
 
 ## Additional steps to get extra points on top of the "base" grade
 
@@ -122,4 +167,3 @@ docker run -e STATIC_APP=172.17.0.x:80 -e DYNAMIC_APP=172.17.0.y:3000 -p 8080:80
 ### Load balancing: round-robin vs sticky sessions
 
 ### Dynamic cluster management
-

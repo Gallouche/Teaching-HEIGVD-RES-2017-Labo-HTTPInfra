@@ -5,7 +5,7 @@ docker build -t http/dynamic express_dynamic_server/
 docker build -t http/reverse apache_reverse_proxy/
 
 echo "Suppression des container existants"
-docker kill $(docker ps -aq)
+docker kill $(docker ps -q)
 docker rm $(docker ps -aq)
 
 echo "Démarrage container static"
