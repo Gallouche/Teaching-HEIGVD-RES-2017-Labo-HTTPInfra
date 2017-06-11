@@ -1,0 +1,28 @@
+version: "2"
+services:
+
+  dynamic:
+    build: ./express_dynamic_server
+    environment:
+      - VIRTUAL_HOST=dynamic.dev
+    ports:
+      - "3000"
+
+  static:
+    build: ./apache_static_server
+    environment:
+      - VIRTUAL_HOST=static.dev
+    ports:
+      - "80"
+
+  nginx-proxy:
+    image: jwilder/nginx-proxy
+    volumes:
+      - /etc/nginx/vhost.d
+      - /usr/share/nginx/html
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - ./proxy_conf/nginx.tmpl:/app/nginx.tmpl:ro
+    ports:
+      - "80:80"
+      - "443:443"
+  
