@@ -103,6 +103,15 @@ docker build -t http/reverse_proxy apache_reverse_proxy
 docker run -e STATIC_APP=172.17.0.x:80 -e DYNAMIC_APP=172.17.0.y:3000 -p 8080:80 http/reverse
 ```
 
+* You need to modify your hosts file, so your browser can set the right header:
+  * Open the hosts file with your favorite editor.
+    * On Windows: C:\Windows\System32\Drivers\etc\hosts
+    * On MacOs & Linux: /etc/hosts
+  * Add the line `127.0.0.1 demo.res.ch`.
+  * Save & quit.
+
+* Now you can acces `demo.res.ch:8080` and you can see the text on the left changing each 5 seconds.
+
 
 ## Step 5: Dynamic reverse proxy
 
