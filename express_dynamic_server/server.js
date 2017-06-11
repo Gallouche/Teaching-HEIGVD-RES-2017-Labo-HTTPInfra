@@ -8,11 +8,16 @@ const app = express()
 app.use(express.static(__dirname + '/public'))
 
 app.get('/', function(req, res) {
+	console.log("I can answer that !")
 	res.json({
 		number: chance.integer({min: 0, max: 100}),
 		hashtag: chance.hashtag(),
 		sentence : Sentencer.make("We all need {{ an_adjective }} {{ noun }} in our life !")
 	})
+})
+
+app.get('/api/fun', function(req, res) {
+	console.log("WRONG PATH")
 })
 
 app.listen(3000, function(){
