@@ -130,7 +130,7 @@ To demo the result we use docker-compose to start two servers, one static and on
 
 ```
 # start the docker compose services, and don't detach it to see the logs
-docker-compose --build
+docker-compose up --build
 
 # scale up or down the static and dynamic services to see how the load balancer reacts
 # this command activates 2 static servers and 3 dynamic servers
