@@ -77,6 +77,8 @@ In this step, the objective is to make the static server a little bit more dynam
 
 We've created a new JavaScript script that will be load by the html file at a connection on the `/`. This script execute a GET request with a JSON option on `/api/fun/` and then parse the payload to insert it in the html with JQuery for exemple the line :  `$("div.sentence > strong").append(fun.sentence)` that will append the fun.sentence string inside the `<strong>` tag of the `<div class="sentence">` element.
 
+The demo would not work without a reverse proxy because we are not fetching data from the static server but from the dynamic one. Which without a reverse proxy causes a cross origin request that will be blocked by the browser to prevent some security exploits. Using a reverse proxy makes the request to the dynamic server appear as request to the same domain as for the static server.
+
 ### Test instructions
 Execute the following steps to see the result of this iteration:
 
@@ -117,6 +119,9 @@ docker run -e STATIC_APP=172.17.0.x:80 -e DYNAMIC_APP=172.17.0.y:3000 -p 8080:80
 ## Step 5: Dynamic reverse proxy
 
 ## Load Balancer
+
+### Description
+
 We've also implemented a load balancer to dispatch the request among multiple containers. For that we used a custom version of the nginx reverse proxy [jwilder/nginx-proxy](https://github.com/jwilder/nginx-proxy) 
 This fork of the official nginx proxy uses [docker-gen](https://github.com/jwilder/docker-gen) to watch for changements among the containers. So we can still dispatch the traffic among multiple containers while adding and removing some.
 
@@ -127,6 +132,9 @@ To be able to match the requested configuration : redirecting / to the static se
 So we generate two upstream groups one for the static servers and one for the dynamic servers. The static servers group has the `ip_hash` module to enable sticky sessions based on the client ip, see the documentation for mmore infos about the `ip_hash` module [here](http://nginx.org/en/docs/http/ngx_http_upstream_module.html#ip_hash). The dynamic servers group balance the traffic in a round robin way (the default balance method in nginx).
 
 To demo the result we use docker-compose to start two servers, one static and one dynamic, and the reverse proxy server. Then we use docker-compose scale to add/remove dynamic or static servers. You can see in the nginx logs that the ids of the dynamic server's containers change at each request unlike the static server's containers which are locked for each different client ip.
+
+
+### Test instructions
 
 ```
 # start the docker compose services, and don't detach it to see the logs
