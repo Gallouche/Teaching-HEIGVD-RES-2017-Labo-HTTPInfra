@@ -4,8 +4,9 @@ $(function () {
     function loadFun() {
         $.getJSON("/api/fun/", function (fun) {
             console.log(fun)
-            console.log(fun.sentence)
             $("div.sentence").append(fun.sentence)
+            $("div.number").append(fun.number.toString())
+            $("div.hashtag").append(fun.hashtag)
         })
     }
     loadFun()
