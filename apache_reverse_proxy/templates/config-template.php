@@ -5,8 +5,8 @@
 <VirtualHost *:80>
     ServerName demo.res.ch
 
-    ProxyPass '/api/festival/' 'http://<?php print "$dynamic_app"?>/'
-    ProxyPassReverse '/api/festival/' 'http://<?php print "$dynamic_app"?>/'
+    ProxyPass '/api/fun/' 'http://<?php print "$dynamic_app"?>/'
+    ProxyPassReverse '/api/fun/' 'http://<?php print "$dynamic_app"?>/'
 
     ProxyPass '/' 'http://<?php print "$static_app"?>/'
     ProxyPassReverse / 'http://<?php print "$static_app"?>/'
